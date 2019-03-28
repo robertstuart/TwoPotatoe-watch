@@ -1,5 +1,5 @@
 
-const int SEND_WATCH     = 129;     // Watchdog message. No payload.
+const int SEND_WATCH     = 129;     // Watchdog message. No payload. 
 const int SEND_BLINK     = 130;     // Led, Pattern.
 const int SEND_BEEP      = 131;     // Pattern.
 const int SEMD_XXX       = 132;

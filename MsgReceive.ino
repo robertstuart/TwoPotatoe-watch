@@ -1,7 +1,7 @@
 /******************************************************************************
     readMain()    Read messages from Teensy 3.6 main processor.
  *****************************************************************************/
-void readMain() {
+void readMain() { 
   const int MAIN_BUFFER_SIZE = 10;
   static char msgStr[MAIN_BUFFER_SIZE];
   static bool isMessageInProgress = false;

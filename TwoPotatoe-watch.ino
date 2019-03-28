@@ -20,7 +20,7 @@ const int BATT_PIN =       A0;   // pin14
 
 unsigned int timeMilliseconds = 0;
 
-float battVolt = 0.0;
+float battVolt = 0.0; 
 
 void setup() {
   Serial.begin(115200);          // debug 

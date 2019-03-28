@@ -1,7 +1,7 @@
 /******************************************************************************
     Speaker  -  Adapted from Pololu 32u4 Arduino library
  *****************************************************************************/
-
+ 
 char musicUp[] = "!T240 L8 cf";
 char musicUp2[] = "!T240 L8 <c<f";
 char musicUp3[] = "T240 L8 cfdgeafb";
@@ -15,7 +15,7 @@ char beepWelcome[] = ">g32>>c32";
 char beepThankYou[] = ">>c32>g32";
 char beepButtonA[] = "!c32";
 char beepButtonB[] = "!e32";
-char beepButtonC[] = "!g32";
+char beepButtonC[] = "!g32";  
 
 // A longer song and its title.
 char musicFugue2[] =

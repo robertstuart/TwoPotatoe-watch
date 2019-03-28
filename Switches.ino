@@ -1,9 +1,8 @@
-
-
 /**************************************************************************.
  * switches()
  *      Toggle TP_STATE_RUN_READY on yellow switch.  1 sec dead period.
  **************************************************************************/
+ 
 void switches() {
   static unsigned int gnTimer = 0;
   static boolean gnState = false;
