@@ -20,8 +20,6 @@ void switches() {
   static boolean yeState = false;
   static boolean oldYeState = false;
 
-  bool b;
-  
   // Debounce Green (back switch)
   boolean gn = digitalRead(SW_PIN_GN) == LOW;
   if (gn) gnTimer = timeMilliseconds;
@@ -47,36 +45,27 @@ void switches() {
   if ((timeMilliseconds - yeTimer) > 50) yeState = false;
   else yeState = true;
 
+  // Green press transition.  Start route.
+  if (gnState && (!oldGnState)) {
+    sendMaMsg(RCV_SWITCH,LED_SW_GN, 1);
+    addScript(MUSIC_UP);
+  }
+  
   // Red press transition
   if (reState && (!oldReState)) {
-    b = digitalRead(LED_PIN_RE) == HIGH;
-    digitalWrite(LED_PIN_RE, b ? LOW : HIGH);
-    Serial.println("red");
-   addScript(MUSIC_FUGUE);
- }
+    sendMaMsg(RCV_SWITCH,LED_SW_RE, 1);
+    addScript(MUSIC_DN);
+  }
 
   // Blue press transition. Toggle route enable.
   if (buState && (!oldBuState)) {
-    b = digitalRead(LED_PIN_BU) == HIGH;
-    digitalWrite(LED_PIN_BU, b ? LOW : HIGH);
-    Serial.println("blue");
-    addScript(MUSIC_WARBLE);
-  }
-
-  // Green press transition.  Start route.
-  if (gnState && (!oldGnState)) {
-    b = digitalRead(LED_PIN_GN) == HIGH;
-    digitalWrite(LED_PIN_GN, b ? LOW : HIGH);
-    Serial.println("green");
-    addScript(MUSIC_BACH);
+    sendMaMsg(RCV_SWITCH,LED_SW_BU, 1);
   }
 
   // Yellow press transition
   if (yeState && (!oldYeState)) {
-    b = digitalRead(LED_PIN_YE) == HIGH;
-    digitalWrite(LED_PIN_YE, b ? LOW : HIGH);
-    Serial.println("yellow");
-   addScript(MUSIC_FUGUE2);
+    sendMaMsg(RCV_SWITCH,LED_SW_YE, 1);
+//   addScript(MUSIC_FUGUE2);
   }
 
   oldBuState = buState;
@@ -84,5 +73,3 @@ void switches() {
   oldReState = reState;
   oldGnState = gnState; 
 }
-
-

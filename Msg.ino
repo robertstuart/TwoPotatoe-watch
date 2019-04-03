@@ -1,5 +1,5 @@
-/******************************************************************************
-    readMain()    Read messages from Teensy 3.6 main processor.
+/*****************************************************************************-
+ *  readMain()    Read messages from Teensy 3.6 main processor.
  *****************************************************************************/
 void readMain() { 
   const int MAIN_BUFFER_SIZE = 10;
@@ -34,24 +34,29 @@ void readMain() {
 
 
 
-/******************************************************************************
-    doMsg() Act on messages Teensy 3.6 main controller.
+/*****************************************************************************-
+ *  doMsg() Act on messages Teensy 3.6 main controller.
  *****************************************************************************/
 void doMsg(int cmd, char msgStr[], int count) {
-//  int intVal;
+  int intVal;
 //  float floatVal;
 //  boolean booleanVal;
 //  String ss;
+  dPrint("Cmd: ", cmd);
+  dPrintln("  \tString: ", msgStr);
 
   msgStr[count] = 0; // Just to be sure.
 
   switch (cmd) {
     case SEND_WATCH:
-      //
       break;
     case SEND_BLINK:
-     break;
+      setBlink((unsigned int) (msgStr[0] - '0'), (unsigned int) (msgStr[1] - '0'));
+      break;
     case SEND_BEEP:
+      if (sscanf(msgStr, "%d", &intVal) > 0) {
+        addScript(intVal);
+      }
       break;
     default:
       Serial.print("Illegal message received: "); Serial.println(cmd);
@@ -59,3 +64,20 @@ void doMsg(int cmd, char msgStr[], int count) {
   }
 }
 
+
+
+/*****************************************************************************-
+ *  sendMaMsg()  Send a message to the main processor.
+ *****************************************************************************/
+void sendMaMsg(int cmd, int v1, int v2) {
+  Serial1.write((byte) cmd);
+  Serial1.print(v1);
+  Serial1.print(v2);
+  Serial1.write((byte) 0);
+}
+  
+void sendMaMsg(int cmd, int val) {
+  Serial1.write((byte) cmd); 
+  Serial1.print(val); 
+  Serial1.write((byte) 0);
+}

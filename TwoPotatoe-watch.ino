@@ -1,5 +1,6 @@
-/******************************************************************************
- *  Teensy 3.2 running at 72 MHz
+/*****************************************************************************-
+ *                     TwoPotatoe-watch
+ *               Teensy 3.2 running at 72 MHz
  *****************************************************************************/
 
 #include "Watch.h"
@@ -19,9 +20,14 @@ const int SPEAKER_PIN =    18;   //
 const int BATT_PIN =       A0;   // pin14
 
 unsigned int timeMilliseconds = 0;
-
+char message[100] = "";
 float battVolt = 0.0; 
 
+
+
+/*****************************************************************************-
+ * setup()
+ *****************************************************************************/
 void setup() {
   Serial.begin(115200);          // debug 
   Serial1.begin(115200);         // Teensy 3.6
@@ -47,15 +53,26 @@ void setup() {
   addScript(MUSIC_UP);
 }
 
+
+
+/*****************************************************************************-
+ * loop()
+ *****************************************************************************/
 void loop() {
   timeMilliseconds = millis();
   readMain();  // Get message from Teensy 3.6 Main processor
   music();
   switches();
   blink13();
+  blinkLed();
   battery();
 }
 
+
+
+/*****************************************************************************-
+ * blink13()
+ *****************************************************************************/
 void blink13() {
   static unsigned long blinkTrigger = 0;
   static bool toggle = false;
@@ -63,13 +80,15 @@ void blink13() {
     blinkTrigger = timeMilliseconds + 100;
     toggle = !toggle;
     digitalWrite(LED_PIN, toggle ? HIGH : LOW);
+//    sendMaMsg(RCV_SWITCH, LED_SW_YE, 1);  
   }
 }
 
 
-/**************************************************************************.
+
+/*****************************************************************************-
  * battery()
- ***************************************************************/
+ *****************************************************************************/
 void battery() {
   static unsigned long batteryTrigger = 0L;
   if (timeMilliseconds > batteryTrigger) {
@@ -79,3 +98,36 @@ void battery() {
   }
 }
 
+
+
+/*****************************************************************************-
+ * dprint???()  Convenience functions for debug printouts.
+ *****************************************************************************/
+void dPrint(String s, int i) {
+  Serial.print(s);
+  Serial.print(i);
+}
+void dPrintln(String s, int i) {
+  Serial.print(s);
+  Serial.println(i);
+}
+void dPrint(String s, float f, int precision) {
+  Serial.print(s);
+  Serial.print(f, precision);
+}
+void dPrintln(String s, float f, int precision) {
+  Serial.print(s);
+  Serial.println(f, precision);
+}
+void dPrint(String s1, char* s2) {
+  Serial.print(s1);
+  Serial.print("\"");
+  Serial.print(s2);
+  Serial.print("\"");
+}
+void dPrintln(String s1, char* s2) {
+  Serial.print(s1);
+  Serial.print("\"");
+  Serial.print(s2);
+  Serial.println("\"");
+}

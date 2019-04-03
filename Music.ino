@@ -1,10 +1,13 @@
 /******************************************************************************
-    Speaker  -  Adapted from Pololu 32u4 Arduino library
+ *  Speaker  -  Adapted from Pololu 32u4 Arduino library
+ *              See https://github.com/pololu/balboa-32u4-arduino-library/blob/master/PololuBuzzer.cpp
+ *              for the script syntax.
  *****************************************************************************/
  
-char musicUp[] = "!T240 L8 cf";
-char musicUp2[] = "!T240 L8 <c<f";
-char musicUp3[] = "T240 L8 cfdgeafb";
+char musicUp[] = "!T240 L8 r>c>f";
+char musicDn[] = "!T240 L8 r>f>c";
+char musicUp2[] = "!T240 L8 r>>c>>f";
+char musicUp3[] = "T240 L8 cfdgeafbg>c";
 char musicpWarble[] = "!T100 L8 efefefefefef";
 char musicDown[] = "!T240 L8 fc";
 char musicBach[] = "!T240 L8 a gafaeada c+adaeafa <aa<bac#ada c#adaeaf4";
@@ -17,6 +20,13 @@ char beepButtonA[] = "!c32";
 char beepButtonB[] = "!e32";
 char beepButtonC[] = "!g32";  
 
+char rhapsody[] = "O6 T40 L16 d#<b<f#<d#<f#<bd#f#"
+  "T80 c#<b-<f#<c#<f#<b-c#8"
+  "T180 d#b<f#d#f#>bd#f#c#b-<f#c#f#>b-c#8 c>c#<c#>c#<b>c#<c#>c#c>c#<c#>c#<b>c#<c#>c#"
+  "c>c#<c#>c#<b->c#<c#>c#c>c#<c#>c#<b->c#<c#>c#"
+  "c>c#<c#>c#f>c#<c#>c#c>c#<c#>c#f>c#<c#>c#"
+  "c>c#<c#>c#f#>c#<c#>c#c>c#<c#>c#f#>c#<c#>c#d#bb-bd#bf#d#c#b-ab-c#b-f#d#";
+  
 // A longer song and its title.
 char musicFugue2[] =
   "! T120O5L16agafaea dac+adaea fa<aa<bac#a dac#adaea f"
@@ -38,6 +48,7 @@ char *scriptArray[] = {
   musicBach,
   musicFugue,
   musicScale,
+  musicDn
 };
 const int SCRIPT_ARRAY_SIZE = sizeof(scriptArray) / sizeof(char*);
 
@@ -101,7 +112,7 @@ void nextNote() {
   static unsigned int wholeNoteDuration = 2000;  // the duration of a whole note
   static unsigned int noteType = 4;               // 4 for quarter, etc
   static unsigned int duration = wholeNoteDuration / noteType;   // duration in ms
-  static unsigned int volume = 15;                 // the note volume
+  //static unsigned int volume = 15;                 // the note volume
   static bool staccato = false;               // true if playing staccato
   static unsigned int staccatoRestDuration = 0;  // duration of a staccato rest,
 
@@ -197,19 +208,20 @@ void nextNote() {
         octave = 4;
         wholeNoteDuration = 2000;
         noteType = 4;
-        volume = 15;
+        // volume = 15;
         staccato = false;
         tmpOctave = octave;
         duration = wholeNoteDuration / noteType;
         break;
 
       default: //  all errors
-        musicQueuePtr = ++musicQueuePtr % MUSIC_QUEUE_SIZE;
-        if (musicQueuePtr != musicQueueEnd) {
-
-        } else {
-
-        }
+        musicQueuePtr++;
+        musicQueuePtr %=  MUSIC_QUEUE_SIZE;
+//        if (musicQueuePtr != musicQueueEnd) {
+//
+//        } else {
+//
+//        }
     }
 
     // Have note. Read note modifiers.
@@ -302,6 +314,3 @@ unsigned int getNumber() {
 
   return arg;
 }
-
-
-
