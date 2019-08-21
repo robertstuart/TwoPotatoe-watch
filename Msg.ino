@@ -35,20 +35,16 @@ void readMain() {
 
 
 /*****************************************************************************-
- *  doMsg() Act on messages Teensy 3.6 main controller.
+ *  doMsg() Act on messages from Teensy 3.6 main controller.
  *****************************************************************************/
 void doMsg(int cmd, char msgStr[], int count) {
   int intVal;
-//  float floatVal;
-//  boolean booleanVal;
-//  String ss;
-  dPrint("Cmd: ", cmd);
-  dPrintln("  \tString: ", msgStr);
 
   msgStr[count] = 0; // Just to be sure.
 
   switch (cmd) {
     case SEND_WATCH:
+      lastWatchMs = timeMilliseconds;
       break;
     case SEND_BLINK:
       setBlink((unsigned int) (msgStr[0] - '0'), (unsigned int) (msgStr[1] - '0'));
@@ -76,7 +72,7 @@ void sendMaMsg(int cmd, int v1, int v2) {
   Serial1.write((byte) 0);
 }
   
-void sendMaMsg(int cmd, int val) {
+void sendMaMsg(int cmd, float val) {
   Serial1.write((byte) cmd); 
   Serial1.print(val); 
   Serial1.write((byte) 0);

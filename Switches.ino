@@ -45,27 +45,28 @@ void switches() {
   if ((timeMilliseconds - yeTimer) > 50) yeState = false;
   else yeState = true;
 
-  // Green press transition.  Start route.
+  // Green press transition.
   if (gnState && (!oldGnState)) {
     sendMaMsg(RCV_SWITCH,LED_SW_GN, 1);
-    addScript(MUSIC_UP);
+    addScript(T_BUTTONB);
   }
   
   // Red press transition
   if (reState && (!oldReState)) {
     sendMaMsg(RCV_SWITCH,LED_SW_RE, 1);
-    addScript(MUSIC_DN);
+    addScript(T_BROWNOUT);
   }
 
-  // Blue press transition. Toggle route enable.
+  // Blue press transition.
   if (buState && (!oldBuState)) {
     sendMaMsg(RCV_SWITCH,LED_SW_BU, 1);
+    addScript(T_ALARM);
   }
 
   // Yellow press transition
   if (yeState && (!oldYeState)) {
     sendMaMsg(RCV_SWITCH,LED_SW_YE, 1);
-//   addScript(MUSIC_FUGUE2);
+//   addScript(T_FUGUE);
   }
 
   oldBuState = buState;

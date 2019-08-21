@@ -1,26 +1,65 @@
 /******************************************************************************
- *  Speaker  -  Adapted from Pololu 32u4 Arduino library
+ *  Tune     -  Adapted from Pololu 32u4 Arduino library
  *              See https://github.com/pololu/balboa-32u4-arduino-library/blob/master/PololuBuzzer.cpp
  *              for the script syntax.
  *****************************************************************************/
- 
-char musicUp[] = "!T240 L8 r>c>f";
-char musicDn[] = "!T240 L8 r>f>c";
-char musicUp2[] = "!T240 L8 r>>c>>f";
-char musicUp3[] = "T240 L8 cfdgeafbg>c";
-char musicpWarble[] = "!T100 L8 efefefefefef";
-char musicDown[] = "!T240 L8 fc";
-char musicBach[] = "!T240 L8 a gafaeada c+adaeafa <aa<bac#ada c#adaeaf4";
-char musicFugue[] = "!T240 L8 agafaea dac+adaea fa<aa<bac#a dac#adaea f4";
-char musicScale[] = "!L16 V8 cdefgab>cbagfedc";
-char beepBrownout[] = "<c8";
-char beepWelcome[] = ">g32>>c32";
-char beepThankYou[] = ">>c32>g32";
-char beepButtonA[] = "!c32";
-char beepButtonB[] = "!e32";
-char beepButtonC[] = "!g32";  
+// The notes are specified by the characters C, D, E, F, G, A, and
+// B, and they are played by default as "quarter notes" with a
+// length of 500 ms.  This corresponds to a tempo of 120
+// beats/min.  Other durations can be specified by putting a number
+// immediately after the note.  For example, C8 specifies C played as an
+// eighth note, with half the duration of a quarter note. The special
+// note R plays a rest (no sound).
+//
+// Various control characters alter the sound:
+//   '>' plays the next note one octave higher
+//
+//   '<' plays the next note one octave lower
+//
+//   '+' or '#' after a note raises any note one half-step
+//
+//   '-' after a note lowers any note one half-step
+//
+//   '.' after a note "dots" it, increasing the length by
+//       50%.  Each additional dot adds half as much as the
+//       previous dot, so that "A.." is 1.75 times the length of
+//       "A".
+//
+//   'O' followed by a number sets the octave (default: O4).
+//
+//   'T' followed by a number sets the tempo (default: T120).
+//
+//   'L' followed by a number sets the default note duration to
+//       the type specified by the number: 4 for quarter notes, 8
+//       for eighth notes, 16 for sixteenth notes, etc.
+//       (default: L4)
+//
+//   'V' followed by a number from 0-15 sets the music volume.
+//       (default: V15)
+//
+//   'MS' sets all subsequent notes to play staccato - each note is played
+//       for 1/2 of its allotted time, followed by an equal period
+//       of silence.
+//
+//   'ML' sets all subsequent notes to play legato - each note is played
+//       for its full length.  This is the default setting.
+//
+//   '!' resets all persistent settings to their defaults.
+//
+// The following plays a c major scale up and back down:
+//   play("L16 V8 cdefgab>cbagfedc");
+//
+// Here is an example from Bach:
+//   play("T240 L8 a gafaeada c+adaeafa <aa<bac#ada c#adaeaf4");
 
-char rhapsody[] = "O6 T40 L16 d#<b<f#<d#<f#<bd#f#"
+
+struct tuneId {
+  String name;
+  char* script;
+};
+ 
+
+char tuneRhapsody[] = "O6 T40 L16 d#<b<f#<d#<f#<bd#f#"
   "T80 c#<b-<f#<c#<f#<b-c#8"
   "T180 d#b<f#d#f#>bd#f#c#b-<f#c#f#>b-c#8 c>c#<c#>c#<b>c#<c#>c#c>c#<c#>c#<b>c#<c#>c#"
   "c>c#<c#>c#<b->c#<c#>c#c>c#<c#>c#<b->c#<c#>c#"
@@ -28,7 +67,7 @@ char rhapsody[] = "O6 T40 L16 d#<b<f#<d#<f#<bd#f#"
   "c>c#<c#>c#f#>c#<c#>c#c>c#<c#>c#f#>c#<c#>c#d#bb-bd#bf#d#c#b-ab-c#b-f#d#";
   
 // A longer song and its title.
-char musicFugue2[] =
+char tuneFugue[] =
   "! T120O5L16agafaea dac+adaea fa<aa<bac#a dac#adaea f"
   "O6dcd<b-d<ad<g d<f+d<gd<ad<b- d<dd<ed<f+d<g d<f+d<gd<ad"
   "L8MS<b-d<b-d MLe-<ge-<g MSc<ac<a MLd<fd<f O5MSb-gb-g"
@@ -39,18 +78,58 @@ char musicFugue2[] =
   "O5e>ee>ef>df>d b->c#b->c#a>df>d e>ee>ef>df>d"
   "e>d>c#>db>d>c#b >c#agaegfe fO6dc#dfdc#<b c#4";
 
-char *scriptArray[] = {
-  musicUp,
-  musicUp2,
-  musicUp3,
-  musicpWarble,
-  musicFugue2,
-  musicBach,
-  musicFugue,
-  musicScale,
-  musicDn
+char tuneUp1[] = "!T240 L8 r>c>f";
+char tuneUp2[] = "!T240 L8 r>>c>>f";
+char tuneUp3[] = "T240 L8 cfdgeafbg>c";
+char tuneDn[] = "!T240 L8 r>f>c";
+char tuneWarble[] = "!T100 L8 efefefefefef";
+char tuneBach[] = "!T240 L8 a gafaeada c+adaeafa <aa<bac#ada c#adaeaf4";
+char tuneFugue2[] = "!T240 L8 agafaea dac+adaea fa<aa<bac#a dac#adaea f4";
+char tuneScale[] = "!L16 V8 cdefgab>cbagfedc";
+char tuneBrownout[] = "<c8";
+char tuneWelcome[] = ">g32>>c32";
+char tuneThankYou[] = ">>c32>g32";
+char tuneButtonA[] = "!c32";
+char tuneButtonB[] = "!e32";
+char tuneButtonC[] = "!g32";  
+char tuneAlarm[] = "!T240 L8 O05 cdcd";
+
+tuneId tuneList[] = {
+  {"Rhapsody", tuneRhapsody},
+  {"Fugue", tuneFugue},
+  {"Beep Up 1", tuneUp1},
+  {"Beep Up 2", tuneUp2},
+  {"Beep Up 3", tuneUp3},
+  {"Down", tuneDn},
+  {"Warble", tuneWarble},
+  {"Bach", tuneBach},
+  {"Fuge 2", tuneFugue2},
+  {"Scale", tuneScale},
+  {"Brownout", tuneBrownout},
+  {"Welcome", tuneWelcome},
+  {"Thank You", tuneThankYou},
+  {"Button A", tuneButtonA},
+  {"Button B", tuneButtonB},
+  {"Button C", tuneButtonC},
+  {"Alarm", tuneAlarm}
 };
-const int SCRIPT_ARRAY_SIZE = sizeof(scriptArray) / sizeof(char*);
+
+//char *scriptArray[] = {
+//  musicUp,
+//  musicUp2,
+//  musicUp3,
+//  musicpWarble,
+//  musicFugue2,
+//  musicBach,
+//  musicFugue,
+//  musicScale,
+//  musicDn,
+//  beepBrownout,
+//  beepButtonA,
+//  beepButtonB,
+//  musicAlarm
+//};
+const int TUNE_LIST_SIZE = sizeof(tuneList) / sizeof(tuneId);
 
 const int MUSIC_QUEUE_SIZE = 100;
 unsigned int musicQueue[MUSIC_QUEUE_SIZE];
@@ -64,11 +143,11 @@ char *scriptPtr = 0;
                 Plays the next note if it is running a script.
                 Sets up the next script if the script ends.
  *****************************************************************************/
-void music() {
+void tune() {
   if (musicQueuePtr != musicQueueEnd) {
     if (musicTrigger == 0) {  // Indicates end of last script
       int q = musicQueue[musicQueuePtr];
-      scriptPtr = scriptArray[q];
+      scriptPtr = tuneList[q].script;
       musicTrigger = 1;  // Causes script to start.
     }
     if (timeMilliseconds > musicTrigger) {
@@ -80,25 +159,15 @@ void music() {
 
 
 
-///******************************************************************************
-//    startScript() Called when a script finishes.  Sets up the next script
-//                 if there is one.  Only called if not at end.
-// *****************************************************************************/
-//void startScript() {
-//  // We have a new script in the queue.  Set it up.
-//}
-//
-
-
 /******************************************************************************
     addScript() Adds a script to the queue
  *****************************************************************************/
 void addScript(unsigned int script) {
-  if (script >= SCRIPT_ARRAY_SIZE) return; // Error?
-  if ((musicQueueEnd + 1) % SCRIPT_ARRAY_SIZE == musicQueuePtr) return; // full?
+  if (script >= TUNE_LIST_SIZE) return; // Error
+  if ((musicQueueEnd + 1) % TUNE_LIST_SIZE == musicQueuePtr) return; // full?
   musicQueue[musicQueueEnd] = script;
   musicQueueEnd++;
-  musicQueueEnd = musicQueueEnd % SCRIPT_ARRAY_SIZE;
+  musicQueueEnd = musicQueueEnd % TUNE_LIST_SIZE;
 }
 
 
@@ -117,7 +186,7 @@ void nextNote() {
   static unsigned int staccatoRestDuration = 0;  // duration of a staccato rest,
 
   int note = 0;  // halftones with zero as lowest C
-  int tmpOctave = octave;
+  int octaveInc = 0;
   int tmpDuration = duration;
   int tmpInt = 0;
   bool isNote = false;
@@ -139,14 +208,14 @@ void nextNote() {
       case 0:  // End of script. 
         noTone(SPEAKER_PIN);
         musicQueuePtr++;
-        musicQueuePtr = musicQueuePtr % SCRIPT_ARRAY_SIZE;
+        musicQueuePtr = musicQueuePtr % TUNE_LIST_SIZE;
         musicTrigger = 0;
         return;
       case '<': // octave lower
-        if (tmpOctave > 0) tmpOctave--;
+        octaveInc--;
         break;
       case '>':
-        if (tmpOctave < 10) tmpOctave++;
+        octaveInc++;
         break;
       case 'c':
         note = 0;
@@ -210,18 +279,12 @@ void nextNote() {
         noteType = 4;
         // volume = 15;
         staccato = false;
-        tmpOctave = octave;
         duration = wholeNoteDuration / noteType;
         break;
 
       default: //  all errors
         musicQueuePtr++;
         musicQueuePtr %=  MUSIC_QUEUE_SIZE;
-//        if (musicQueuePtr != musicQueueEnd) {
-//
-//        } else {
-//
-//        }
     }
 
     // Have note. Read note modifiers.
@@ -262,11 +325,9 @@ void nextNote() {
       staccatoRestDuration = tmpDuration / 2;
       tmpDuration -= staccatoRestDuration;
     }
-
   } while (isNote == false);
 
-  note = note + (tmpOctave * 12);
-
+  note = note + ((octave + octaveInc) * 12);
   // Now we have the note & timing.
   int hz = (int) (16.351599D * pow(2.0D, ((double) note) / 12.0D));
   if (rest) noTone (SPEAKER_PIN);

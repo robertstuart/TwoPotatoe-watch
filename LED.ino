@@ -1,16 +1,25 @@
 const byte END_MARKER = 0xFF;
-byte blinkOff[] = {0,END_MARKER};               // Off
-byte blinkSF[] = {1,0,0,0,0,0,0,0,END_MARKER};  // Slow flash
-byte blinkFF[] = {1,0,END_MARKER};              // Fast flash
-byte blinkSB[] = {1,1,1,1,0,0,0,0,END_MARKER};  // Slow blink
-byte blinkOn[] = {1,END_MARKER};                // On
+byte blinkOff[] = {0,END_MARKER};                   // Off
+byte blinkSF[] = {1,0,0,0,0,0,0,0,END_MARKER} ;     // Slow flash
+byte blinkFF[] = {1,0,END_MARKER};                  // Fast flash
+byte blinkSB[] = {1,1,1,1,0,0,0,0,END_MARKER};      // Slow blink
+byte blinkOn[] = {1,END_MARKER};                    // On
+byte blink20[] = {1,1,0,0,0,0,0,0,0,0,END_MARKER};  // 20%
+byte blink40[] = {1,1,1,1,0,0,0,0,0,0,END_MARKER};  // 40%
+byte blink60[] = {1,1,1,1,1,1,0,0,0,0,END_MARKER};  // 60%
+byte blink80[] = {1,1,1,1,1,1,1,1,0,0,END_MARKER};  // 80%
+
 
 byte *blinkArray[] = {
   blinkOff,     // BLINK_OFF
   blinkSF,      // BLINK_SF
   blinkFF,      // BLINK_FF
   blinkSB,      // BLINK_SB
-  blinkOn       // BLINK_ON
+  blinkOn,      // BLINK_ON
+  blink20,      // BLINK_20
+  blink40,      // BLINK_40
+  blink60,      // BLINK_60
+  blink80,      // BLINK_80
 };
 
 byte * patternGn = blinkOn;;
@@ -84,6 +93,7 @@ void setBlink(unsigned int color, unsigned int pattern) {
       if (p != patternYe) {
         patternYe = p;
         blinkPtrYe = 0;
+        isRunning = (pattern == BLINK_ON) ? true : false;
       }
       break; 
   }
